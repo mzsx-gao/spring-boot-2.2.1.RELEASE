@@ -9,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+/**
+ * 注意这里可以直接测试controller
+ */
 @SpringBootTest(classes= HelloController.class)
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
