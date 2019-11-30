@@ -12,18 +12,19 @@ import org.springframework.test.context.web.WebAppConfiguration;
 /**
  * 注意这里可以直接测试controller
  */
-@SpringBootTest(classes= HelloController.class)
+@SpringBootTest(classes = HelloController.class)
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HelloControllerTest {
-	
+
 	@Autowired
 	private HelloController controller;
 
 	@Test
-	public void testIndex(){
+	public void testIndex() {
 		String result = controller.index();
 		System.out.println(result);
 		TestCase.assertEquals("高书电，你好 !!!", result);
 	}
+
 }
