@@ -204,10 +204,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	}
 
 	/**
-	 * Add config file property sources to the specified environment.
-	 * @param environment the environment to add source to
-	 * @param resourceLoader the resource loader
-	 * @see #addPostProcessors(ConfigurableApplicationContext)
+	 * 添加配置文件属性源到环境中
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 		RandomValuePropertySource.addToEnvironment(environment);
@@ -315,8 +312,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.environment = environment;
 			this.placeholdersResolver = new PropertySourcesPlaceholdersResolver(this.environment);
 			this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
-			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-					getClass().getClassLoader());
+			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, getClass().getClassLoader());
 		}
 
 		void load() {

@@ -27,9 +27,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * A collection of {@link SpringApplicationRunListener}.
- *
- * @author Phillip Webb
+ * SpringApplicationRunListeners类的主要作用就是存储监听器对象集合并发布各种监听事件,SpringApplicationRunListeners其本质上
+ * 就是一个事件对象存储和发布者,它在SpringBoot应用启动的不同时间点委托给ApplicationEventMulticaster发布不同应用事件类型(ApplicationEvent)
  */
 class SpringApplicationRunListeners {
 
@@ -42,42 +41,49 @@ class SpringApplicationRunListeners {
 		this.listeners = new ArrayList<>(listeners);
 	}
 
+	//首次启动run方法时立即调用
 	void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.starting();
 		}
 	}
 
+	// 一旦准备好环境，发布ApplicationEnvironmentPreparedEvent事件；在ApplicationContext创建环境之前调用
 	void environmentPrepared(ConfigurableEnvironment environment) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.environmentPrepared(environment);
 		}
 	}
 
+	// ApplicationContext在创建和准备之后调用，但在加载源之前调用
 	void contextPrepared(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.contextPrepared(context);
 		}
 	}
 
+	// 在应用程序上下文加载之后但在刷新之前调用
 	void contextLoaded(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.contextLoaded(context);
 		}
 	}
 
+	// 上下文已被刷新，并且应用程序已启动，且CommandLineRunners和ApplicationRunners未被调用
 	void started(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.started(context);
 		}
 	}
 
+	// 在run方法完成之前立即调用，应用上下文已经被刷新,并且CommandLineRunners和ApplicationRunners已经被调用
 	void running(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.running(context);
 		}
 	}
 
+	// 在运行应用程序时发生故障时调用
 	void failed(ConfigurableApplicationContext context, Throwable exception) {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			callFailedListener(listener, context, exception);
