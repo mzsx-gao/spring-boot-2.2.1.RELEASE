@@ -296,6 +296,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private final ResourceLoader resourceLoader;
 
+		//配置文件加载器，包括PropertiesPropertySourceLoader和YamlPropertySourceLoader
 		private final List<PropertySourceLoader> propertySourceLoaders;
 
 		private Deque<Profile> profiles;
@@ -328,8 +329,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 							if (isDefaultProfile(profile)) {
 								addProfileToEnvironment(profile.getName());
 							}
-							load(profile, this::getPositiveProfileFilter,
-									addToLoaded(MutablePropertySources::addLast, false));
+							load(profile, this::getPositiveProfileFilter, addToLoaded(MutablePropertySources::addLast, false));
 							this.processedProfiles.add(profile);
 						}
 						load(null, this::getNegativeProfileFilter, addToLoaded(MutablePropertySources::addFirst, true));
@@ -416,8 +416,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					&& this.environment.acceptsProfiles(Profiles.of(document.getProfiles())));
 		}
 
-		private DocumentConsumer addToLoaded(BiConsumer<MutablePropertySources, PropertySource<?>> addMethod,
-				boolean checkForExisting) {
+		private DocumentConsumer addToLoaded(BiConsumer<MutablePropertySources, PropertySource<?>> addMethod, boolean checkForExisting) {
 			return (profile, document) -> {
 				if (checkForExisting) {
 					for (MutablePropertySources merged : this.loaded.values()) {
@@ -426,8 +425,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						}
 					}
 				}
-				MutablePropertySources merged = this.loaded.computeIfAbsent(profile,
-						(k) -> new MutablePropertySources());
+				MutablePropertySources merged = this.loaded.computeIfAbsent(profile, (k) -> new MutablePropertySources());
 				addMethod.accept(merged, document.getPropertySource());
 			};
 		}
@@ -440,8 +438,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			});
 		}
 
-		private void load(String location, String name, Profile profile, DocumentFilterFactory filterFactory,
-				DocumentConsumer consumer) {
+		private void load(String location, String name, Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			if (!StringUtils.hasText(name)) {
 				for (PropertySourceLoader loader : this.propertySourceLoaders) {
 					if (canLoadFileExtension(loader, location)) {
@@ -457,8 +454,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				for (String fileExtension : loader.getFileExtensions()) {
 					if (processed.add(fileExtension)) {
-						loadForFileExtension(loader, location + name, "." + fileExtension, profile, filterFactory,
-								consumer);
+						loadForFileExtension(loader, location + name, "." + fileExtension, profile, filterFactory, consumer);
 					}
 				}
 			}
@@ -496,16 +492,14 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				Resource resource = this.resourceLoader.getResource(location);
 				if (resource == null || !resource.exists()) {
 					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped missing config ", location, resource,
-								profile);
+						StringBuilder description = getDescription("Skipped missing config ", location, resource, profile);
 						this.logger.trace(description);
 					}
 					return;
 				}
 				if (!StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()))) {
 					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped empty config extension ", location,
-								resource, profile);
+						StringBuilder description = getDescription("Skipped empty config extension ", location, resource, profile);
 						this.logger.trace(description);
 					}
 					return;
@@ -514,8 +508,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				List<Document> documents = loadDocuments(loader, name, resource);
 				if (CollectionUtils.isEmpty(documents)) {
 					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped unloaded config ", location, resource,
-								profile);
+						StringBuilder description = getDescription("Skipped unloaded config ", location, resource, profile);
 						this.logger.trace(description);
 					}
 					return;
