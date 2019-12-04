@@ -198,6 +198,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		addPropertySources(environment, application.getResourceLoader());
 	}
 
+	//最终添加了一个PropertySourceOrderingPostProcessor.
 	private void onApplicationPreparedEvent(ApplicationEvent event) {
 		this.logger.switchTo(ConfigFileApplicationListener.class);
 		addPostProcessors(((ApplicationPreparedEvent) event).getApplicationContext());

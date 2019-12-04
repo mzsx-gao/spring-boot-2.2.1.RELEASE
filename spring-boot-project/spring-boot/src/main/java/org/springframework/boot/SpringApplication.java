@@ -420,11 +420,12 @@ public class SpringApplication {
 		Assert.notEmpty(sources, "Sources must not be empty");
 		// 注册启动类的bean定义，SpringApplication的load方法内会创建BeanDefinitionLoader的对象，并调用它的load()方法
 		load(context, sources.toArray(new Object[0]));
-		// 调用listeners的contextLoaded方法，说明上下文已经加载，该方法先找到所有的ApplicationListener，遍历这些listener，
-        // 如果该listener继承了ApplicationContextAware类，那么在这一步会调用它的setApplicationContext方法，设置context
+		// 1.上下文已经加载，该方法先找到所有的ApplicationListener，遍历这些listener，广播ApplicationPreparedEvent事件
+        // 2.如果该listener继承了ApplicationContextAware类，那么在这一步会调用它的setApplicationContext方法，设置context
 		listeners.contextLoaded(context);
 	}
 
+	//刷新山下文
 	private void refreshContext(ConfigurableApplicationContext context) {
 		refresh(context);
 		if (this.registerShutdownHook) {
@@ -708,7 +709,7 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Load beans into the application context.
+	 * 注册启动类到spring容器中
 	 * @param context the context to load beans into
 	 * @param sources the sources to load
 	 */
