@@ -51,6 +51,7 @@ public class DelegatingApplicationContextInitializer
 	@Override
 	public void initialize(ConfigurableApplicationContext context) {
 		ConfigurableEnvironment environment = context.getEnvironment();
+		//通过env获取到context.initializer.classes配置的值，如果有则直接获取到具体的值并进行实例化
 		List<Class<?>> initializerClasses = getInitializerClasses(environment);
 		if (!initializerClasses.isEmpty()) {
 			applyInitializerClasses(context, initializerClasses);
@@ -100,8 +101,7 @@ public class DelegatingApplicationContextInitializer
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void applyInitializers(ConfigurableApplicationContext context,
-			List<ApplicationContextInitializer<?>> initializers) {
+	private void applyInitializers(ConfigurableApplicationContext context, List<ApplicationContextInitializer<?>> initializers) {
 		initializers.sort(new AnnotationAwareOrderComparator());
 		for (ApplicationContextInitializer initializer : initializers) {
 			initializer.initialize(context);

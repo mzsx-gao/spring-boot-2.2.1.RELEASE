@@ -319,7 +319,7 @@ public class SpringApplication {
 			configureIgnoreBeanInfo(environment);
 			//打印banner
 			Banner printedBanner = printBanner(environment);
-			//创建springboot上下文
+			//创建springboot上下文，通常web环境为AnnotationConfigServletWebServerApplicationContext
 			context = createApplicationContext();
 			//获取异常报告对象
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
@@ -388,23 +388,28 @@ public class SpringApplication {
 
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
+	    //上下文设置环境
 		context.setEnvironment(environment);
+		//设置上下文的beanNameGenerator和resourceLoader(如果SpringApplication有的话)
 		postProcessApplicationContext(context);
+		//在上下文context刷新之前调用所有的ApplicationContextInitializer的initialize方法，对上下文做初始化
 		applyInitializers(context);
+		//contextPrepareds 是一个空实现
 		listeners.contextPrepared(context);
+		//打印启动日志
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
 		}
-		// Add boot specific singleton beans
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		//往上下文的beanFactory中注册一个singleton的bean，bean的名字是springApplicationArguments，bean的实例是之前实例化的ApplicationArguments对象
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
 		if (printedBanner != null) {
+            //注册一个singleton的bean，bean的名字是springBootBanner，bean的实例就是这个printedBanner
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
 		if (beanFactory instanceof DefaultListableBeanFactory) {
-			((DefaultListableBeanFactory) beanFactory)
-					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+			((DefaultListableBeanFactory) beanFactory).setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
@@ -412,7 +417,10 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
+		// 注册启动类的bean定义，SpringApplication的load方法内会创建BeanDefinitionLoader的对象，并调用它的load()方法
 		load(context, sources.toArray(new Object[0]));
+		// 调用listeners的contextLoaded方法，说明上下文已经加载，该方法先找到所有的ApplicationListener，遍历这些listener，
+        // 如果该listener继承了ApplicationContextAware类，那么在这一步会调用它的setApplicationContext方法，设置context
 		listeners.contextLoaded(context);
 	}
 
@@ -571,13 +579,16 @@ public class SpringApplication {
 		}
 	}
 
+	//打印banner
 	private Banner printBanner(ConfigurableEnvironment environment) {
+        // 1. 首先判断banner的输出级别。如果禁用了，则直接返回空
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader());
+		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader : new DefaultResourceLoader(getClassLoader());
+        //实例化SpringApplicationBannerPrinter类
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
+        //如果banner的输出模式是Mode.LOG，则直接将其信息输出到logger日志中，否则将其输出到控制台，也就是System.out
 		if (this.bannerMode == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
@@ -621,8 +632,7 @@ public class SpringApplication {
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
 		if (this.beanNameGenerator != null) {
-			context.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-					this.beanNameGenerator);
+			context.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {
@@ -645,10 +655,11 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void applyInitializers(ConfigurableApplicationContext context) {
+        //从SpringApplication类中的initializers集合获取所有的ApplicationContextInitializer
 		for (ApplicationContextInitializer initializer : getInitializers()) {
-			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
-					ApplicationContextInitializer.class);
+			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(), ApplicationContextInitializer.class);
 			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
+			//循环调用ApplicationContextInitializer中的initialize方法
 			initializer.initialize(context);
 		}
 	}

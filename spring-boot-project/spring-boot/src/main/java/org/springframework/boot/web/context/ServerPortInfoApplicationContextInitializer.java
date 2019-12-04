@@ -33,21 +33,8 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
- * ports that {@link WebServer} servers are actually listening on. The property
- * {@literal "local.server.port"} can be injected directly into tests using
- * {@link Value @Value} or obtained via the {@link Environment}.
- * <p>
- * If the {@link WebServerInitializedEvent} has a
- * {@link WebServerApplicationContext#getServerNamespace() server namespace} , it will be
- * used to construct the property name. For example, the "management" actuator context
- * will have the property name {@literal "local.management.port"}.
- * <p>
- * Properties are automatically propagated up to any parent context.
- *
- * @author Dave Syer
- * @author Phillip Webb
- * @since 2.0.0
+ * 向applicationContext 添加一个监听.当发生WebServerInitializedEvent事件时.会执行onApplicationEvent方法.
+ * 向当前environment中添加一个MapPropertySource,key为server.ports，value为一个map,其中的key:local.server.port,value:端口号
  */
 public class ServerPortInfoApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, ApplicationListener<WebServerInitializedEvent> {
