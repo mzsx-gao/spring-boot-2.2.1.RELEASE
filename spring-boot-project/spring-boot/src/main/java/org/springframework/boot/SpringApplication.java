@@ -386,6 +386,7 @@ public class SpringApplication {
 		}
 	}
 
+	//准备上下文环境
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
 	    //上下文设置环境
