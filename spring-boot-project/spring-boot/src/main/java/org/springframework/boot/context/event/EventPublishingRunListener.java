@@ -100,16 +100,19 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 		this.initialMulticaster.multicastEvent(new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
+	//上下文已被刷新，并且应用程序已启动，且CommandLineRunners和ApplicationRunners未被调用
 	@Override
 	public void started(ConfigurableApplicationContext context) {
 		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context));
 	}
 
+    // 在run方法完成之前立即调用，应用上下文已经被刷新,并且CommandLineRunners和ApplicationRunners已经被调用
 	@Override
 	public void running(ConfigurableApplicationContext context) {
 		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context));
 	}
 
+	//异常处理
 	@Override
 	public void failed(ConfigurableApplicationContext context, Throwable exception) {
 		ApplicationFailedEvent event = new ApplicationFailedEvent(this.application, this.args, context, exception);
@@ -122,8 +125,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 			// An inactive context may not have a multicaster so we use our multicaster to
 			// call all of the context's listeners instead
 			if (context instanceof AbstractApplicationContext) {
-				for (ApplicationListener<?> listener : ((AbstractApplicationContext) context)
-						.getApplicationListeners()) {
+				for (ApplicationListener<?> listener : ((AbstractApplicationContext) context).getApplicationListeners()) {
 					this.initialMulticaster.addApplicationListener(listener);
 				}
 			}

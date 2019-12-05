@@ -48,8 +48,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 class SharedMetadataReaderFactoryContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	public static final String BEAN_NAME = "org.springframework.boot.autoconfigure."
-			+ "internalCachingMetadataReaderFactory";
+	public static final String BEAN_NAME = "org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory";
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -66,8 +65,7 @@ class SharedMetadataReaderFactoryContextInitializer
 	 * {@link CachingMetadataReaderFactory} and configure the
 	 * {@link ConfigurationClassPostProcessor}.
 	 */
-	private static class CachingMetadataReaderFactoryPostProcessor
-			implements BeanDefinitionRegistryPostProcessor, PriorityOrdered {
+	private static class CachingMetadataReaderFactoryPostProcessor implements BeanDefinitionRegistryPostProcessor, PriorityOrdered {
 
 		@Override
 		public int getOrder() {
@@ -79,6 +77,11 @@ class SharedMetadataReaderFactoryContextInitializer
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
+        /**
+         * 1.注册了一个名为 org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory ,class为SharedMetadataReaderFactoryBean 的bean
+         * 2.从registry获得org.springframework.context.annotation.internalConfigurationAnnotationProcessor的bean后,向其添加了一个 名为metadataReaderFactory ,
+         * 对 org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory 的引用
+         */
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			register(registry);
@@ -94,8 +97,7 @@ class SharedMetadataReaderFactoryContextInitializer
 
 		private void configureConfigurationClassPostProcessor(BeanDefinitionRegistry registry) {
 			try {
-				BeanDefinition definition = registry
-						.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
+				BeanDefinition definition = registry.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
 				definition.getPropertyValues().add("metadataReaderFactory", new RuntimeBeanReference(BEAN_NAME));
 			}
 			catch (NoSuchBeanDefinitionException ex) {

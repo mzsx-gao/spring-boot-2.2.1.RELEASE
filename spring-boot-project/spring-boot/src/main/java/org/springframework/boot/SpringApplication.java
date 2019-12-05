@@ -336,6 +336,7 @@ public class SpringApplication {
 			}
 			//执行监听器started方法
 			listeners.started(context);
+			//对容器中实现CommandLineRunner、ApplicationRunner接口的bean进行其run方法的回调
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -393,7 +394,8 @@ public class SpringApplication {
 		context.setEnvironment(environment);
 		//设置上下文的beanNameGenerator和resourceLoader(如果SpringApplication有的话)
 		postProcessApplicationContext(context);
-		//在上下文context刷新之前调用所有的ApplicationContextInitializer的initialize方法，对上下文做初始化
+		//在上下文context刷新之前调用所有的ApplicationContextInitializer的initialize方法，对上下文做初始化，
+        //比如这里的初始化过程中可以给context上下文添加一些BeanFactoryPostProcessor
 		applyInitializers(context);
 		//contextPrepareds 是一个空实现
 		listeners.contextPrepared(context);
@@ -794,6 +796,7 @@ public class SpringApplication {
 	protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
 	}
 
+    //对容器中实现CommandLineRunner、ApplicationRunner接口的bean进行其run方法的回调
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
 		List<Object> runners = new ArrayList<>();
 		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
@@ -827,6 +830,9 @@ public class SpringApplication {
 		}
 	}
 
+    /**
+     * 当SpringApplication#run 运行过程中,发生异常时,会调用handleRunFailure,进行处理,最后抛出IllegalStateException
+     */
 	private void handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
 			Collection<SpringBootExceptionReporter> exceptionReporters, SpringApplicationRunListeners listeners) {
 		try {

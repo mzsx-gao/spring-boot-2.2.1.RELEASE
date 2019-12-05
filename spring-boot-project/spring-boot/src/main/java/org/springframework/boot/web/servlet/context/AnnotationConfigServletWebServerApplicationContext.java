@@ -198,6 +198,9 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 		super.prepareRefresh();
 	}
 
+    /**
+     * 子类覆盖了父类AbstractApplication的postProcessBeanFactory方法做额外的处理，这里就是一个扩展点
+     */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
