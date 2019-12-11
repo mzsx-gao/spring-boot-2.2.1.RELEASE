@@ -326,7 +326,7 @@ public class SpringApplication {
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			//准备上下文环境
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-			//刷新上下文
+			//刷新上下文,该执行调用spring IOC刷新上下文过程，注意springboot创建内置的servlet容器就是在这里创建的
 			refreshContext(context);
 			//刷新上下文后续处理
 			afterRefresh(context, applicationArguments);
@@ -427,7 +427,7 @@ public class SpringApplication {
 		listeners.contextLoaded(context);
 	}
 
-	//刷新山下文
+	//刷新上下文
 	private void refreshContext(ConfigurableApplicationContext context) {
 		refresh(context);
 		if (this.registerShutdownHook) {
