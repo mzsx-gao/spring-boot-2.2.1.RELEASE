@@ -179,12 +179,15 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		stopAndReleaseWebServer();
 	}
 
-	//启动嵌入的servlet容器
+	/**
+	 * 启动嵌入的servlet容器，项目启动时会读取ServletWebServerFactoryConfiguration这个配置类，默认初始化TomcatServletWebServerFactory
+	 */
 	private void createWebServer() {
 		WebServer webServer = this.webServer;
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
 			ServletWebServerFactory factory = getWebServerFactory();
+			//启动web容器
 			this.webServer = factory.getWebServer(getSelfInitializer());
 		}
 		else if (servletContext != null) {
@@ -199,10 +202,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	/**
-	 * Returns the {@link ServletWebServerFactory} that should be used to create the
-	 * embedded {@link WebServer}. By default this method searches for a suitable bean in
-	 * the context itself.
-	 * @return a {@link ServletWebServerFactory} (never {@code null})
+	 * 获取容器工厂，默认获取TomcatServletWebServerFactory
 	 */
 	protected ServletWebServerFactory getWebServerFactory() {
 		// Use bean names so that we don't consider the hierarchy

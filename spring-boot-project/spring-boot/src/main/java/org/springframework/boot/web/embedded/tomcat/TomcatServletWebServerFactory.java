@@ -177,6 +177,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		if (this.disableMBeanRegistry) {
 			Registry.disableRegistry();
 		}
+		//对内嵌的tomcat源码API的调用
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
@@ -190,7 +191,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
 		}
+		// 准备TomcatEmbeddedContext并设置到tomcat的StandardHost中
 		prepareContext(tomcat.getHost(), initializers);
+		//真正启动tomcat的代码
 		return getTomcatWebServer(tomcat);
 	}
 
@@ -213,8 +216,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		File docBase = (documentRoot != null) ? documentRoot : createTempDir("tomcat-docbase");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader((this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
-				: ClassUtils.getDefaultClassLoader());
+		context.setParentClassLoader((this.resourceLoader != null) ? this.resourceLoader.getClassLoader() : ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		context.setUseRelativeRedirects(false);
