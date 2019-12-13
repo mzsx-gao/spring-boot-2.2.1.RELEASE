@@ -309,7 +309,7 @@ public class Binder {
 	}
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
-			boolean allowRecursiveBinding, boolean create) {
+					   boolean allowRecursiveBinding, boolean create) {
 		context.clearConfigurationProperty();
 		try {
 			Bindable<T> replacementTarget = handler.onStart(name, target, context);
@@ -367,6 +367,7 @@ public class Binder {
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, boolean allowRecursiveBinding) {
+		//从当前环境中找对应的属性，第一次因为传递的是前缀，所以为空，第二次会前缀加上属性，就有值了
 		ConfigurationProperty property = findProperty(name, context);
 		if (property == null && containsNoDescendantOf(context.getSources(), name) && context.depth != 0) {
 			return null;
@@ -436,8 +437,12 @@ public class Binder {
 		return result;
 	}
 
+	/**
+	 * 绑定数据对象,内部调用JavaBeanBinder#bind方法来完成数据绑定，这里的name即是@ConfigurationProperties里配的前缀
+	 * 主要思路就是反射出对象里的所有属性，然后将前缀+属性名称作为key,去配置文件里找对应的value，赋值给对象的属性
+	 */
 	private Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
-			Context context, boolean allowRecursiveBinding) {
+								  Context context, boolean allowRecursiveBinding) {
 		if (isUnbindableBean(name, target, context)) {
 			return null;
 		}
@@ -445,10 +450,14 @@ public class Binder {
 		if (!allowRecursiveBinding && context.isBindingDataObject(type)) {
 			return null;
 		}
-		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
-				propertyTarget, handler, context, false, false);
+
+		//这个bind方法会在JavaBeanBinder#bind方法中回调；这里的关键点是name.append(propertyName)
+		DataObjectPropertyBinder propertyBinder =
+				(propertyName, propertyTarget) -> bind(name.append(propertyName), propertyTarget, handler, context, false, false);
+
 		return context.withDataObject(type, () -> {
 			for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
+				//调用JavaBeanBinder#bind方法来完成数据绑定
 				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
 				if (instance != null) {
 					return instance;

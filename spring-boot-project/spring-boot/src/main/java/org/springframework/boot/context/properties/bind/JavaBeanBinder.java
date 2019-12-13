@@ -44,9 +44,13 @@ class JavaBeanBinder implements DataObjectBinder {
 
 	static final JavaBeanBinder INSTANCE = new JavaBeanBinder();
 
+	/**
+	 * 绑定JAVA对象，这里的name是@ConfigurationProperties中配置的前缀;
+	 * 这里循环对象中的所有属性，然后配置的前缀拼接成key,去当前环境中找对象的value赋值给响应的属性
+	 * 外围调用地方:Binder#bindDataObject
+	 */
 	@Override
-	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
-			DataObjectPropertyBinder propertyBinder) {
+	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context, DataObjectPropertyBinder propertyBinder) {
 		boolean hasKnownBindableProperties = target.getValue() != null && hasKnownBindableProperties(name, context);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
@@ -81,14 +85,12 @@ class JavaBeanBinder implements DataObjectBinder {
 		return bound;
 	}
 
-	private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder,
-			BeanProperty property) {
+	private <T> boolean bind(BeanSupplier<T> beanSupplier, DataObjectPropertyBinder propertyBinder, BeanProperty property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
 		Supplier<Object> value = property.getValue(beanSupplier);
 		Annotation[] annotations = property.getAnnotations();
-		Object bound = propertyBinder.bindProperty(propertyName,
-				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
+		Object bound = propertyBinder.bindProperty(propertyName, Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
 		if (bound == null) {
 			return false;
 		}

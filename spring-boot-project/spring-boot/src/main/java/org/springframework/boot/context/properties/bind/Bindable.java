@@ -148,8 +148,7 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
-		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations != null) ? annotations : NO_ANNOTATIONS);
+		return new Bindable<>(this.type, this.boxedType, this.value, (annotations != null) ? annotations : NO_ANNOTATIONS);
 	}
 
 	/**
@@ -158,8 +157,7 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withExistingValue(T existingValue) {
-		Assert.isTrue(
-				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
+		Assert.isTrue(existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
 		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
 		return new Bindable<>(this.type, this.boxedType, value, this.annotations);

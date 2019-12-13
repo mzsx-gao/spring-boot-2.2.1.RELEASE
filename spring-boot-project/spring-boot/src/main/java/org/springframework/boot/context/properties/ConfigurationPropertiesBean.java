@@ -259,10 +259,8 @@ public final class ConfigurationPropertiesBean {
 			return null;
 		}
 		Validated validated = findAnnotation(instance, type, factory, Validated.class);
-		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
-				: new Annotation[] { annotation };
-		ResolvableType bindType = (factory != null) ? ResolvableType.forMethodReturnType(factory)
-				: ResolvableType.forClass(type);
+		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated } : new Annotation[] { annotation };
+		ResolvableType bindType = (factory != null) ? ResolvableType.forMethodReturnType(factory) : ResolvableType.forClass(type);
 		Bindable<Object> bindTarget = Bindable.of(bindType).withAnnotations(annotations);
 		if (instance != null) {
 			bindTarget = bindTarget.withExistingValue(instance);

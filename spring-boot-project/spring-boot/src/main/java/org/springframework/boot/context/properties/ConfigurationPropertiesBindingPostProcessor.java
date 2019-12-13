@@ -91,6 +91,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
+	/**
+	 * 在bean初始化之前处理@ConfiguraionProperties的属性绑定
+	 */
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
@@ -117,9 +120,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	}
 
 	/**
-	 * Register a {@link ConfigurationPropertiesBindingPostProcessor} bean if one is not
-	 * already registered.
-	 * @param registry the bean definition registry
+	 * 注册一个ConfigurationPropertiesBindingPostProcessor
 	 * @since 2.2.0
 	 */
 	public static void register(BeanDefinitionRegistry registry) {
@@ -130,6 +131,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
+		//注册两个bean,ConfigurationPropertiesBinder和ConfigurationPropertiesBinder.Factory
 		ConfigurationPropertiesBinder.register(registry);
 	}
 
