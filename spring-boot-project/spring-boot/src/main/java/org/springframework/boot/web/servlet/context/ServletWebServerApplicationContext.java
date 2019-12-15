@@ -146,15 +146,15 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 	}
 
-    /**
-     * 该方法是springboot对AbstractApplicationContext的refresh方法内部的onRefresh()方法的扩展，springboot创建内置的
-     * servlet容器就是在这里创建的
-     */
+	/**
+	 * 该方法是springboot对AbstractApplicationContext的refresh方法内部的onRefresh()方法的扩展，springboot创建内置的
+	 * servlet容器就是在这里创建的
+	 */
 	@Override
 	protected void onRefresh() {
 		super.onRefresh();
 		try {
-			//创建一个嵌入的servlet容器
+			// 创建一个嵌入的servlet容器
 			createWebServer();
 		}
 		catch (Throwable ex) {
@@ -165,10 +165,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
-		//启动嵌入的servlet容器
+		// 启动嵌入的servlet容器
 		WebServer webServer = startWebServer();
 		if (webServer != null) {
-		    //发布ServletWebServerInitializedEvent事件
+			// 发布ServletWebServerInitializedEvent事件
 			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
 		}
 	}
@@ -187,7 +187,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
 			ServletWebServerFactory factory = getWebServerFactory();
-			//启动web容器
+			// 启动web容器
 			this.webServer = factory.getWebServer(getSelfInitializer());
 		}
 		else if (servletContext != null) {

@@ -131,7 +131,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
-		//注册两个bean,ConfigurationPropertiesBinder和ConfigurationPropertiesBinder.Factory
+		// 注册两个bean,ConfigurationPropertiesBinder和ConfigurationPropertiesBinder.Factory
 		ConfigurationPropertiesBinder.register(registry);
 	}
 

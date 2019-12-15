@@ -112,13 +112,19 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		if (!isEnabled(annotationMetadata)) {
 			return EMPTY_ENTRY;
 		}
+		//得到注解中的所有属性信息，即@EnableAutoConfiguration注解的exclude和excludeName属性
 		AnnotationAttributes attributes = getAttributes(annotationMetadata);
+		//得到候选配置列表，默认返回spring.factories文件中key为org.springframework.boot.autoconfigure.EnableAutoConfiguration的所有value
 		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+		//去重
 		configurations = removeDuplicates(configurations);
+		//根据注解中的exclude信息去除不需要的
 		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
 		checkExcludedClasses(configurations, exclusions);
 		configurations.removeAll(exclusions);
+		//过滤
 		configurations = filter(configurations, autoConfigurationMetadata);
+		//派发事件
 		fireAutoConfigurationImportEvents(configurations, exclusions);
 		return new AutoConfigurationEntry(configurations, exclusions);
 	}
@@ -236,6 +242,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return (excludes != null) ? Arrays.asList(excludes) : Collections.emptyList();
 	}
 
+	/**
+	 * 对配置类进行过滤
+	 * 1.加载META-INF/spring.factories 中配置的org.springframework.boot.autoconfigure.AutoConfigurationImportFilter，配置
+	 * 内容如下:
+	 * org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+	 * org.springframework.boot.autoconfigure.condition.OnBeanCondition,\
+	 * org.springframework.boot.autoconfigure.condition.OnClassCondition,\
+	 * org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
+	 * 2.循环调用match()方法进行过滤,将符合要求的加入到result中进行返回,说白了就是springboot默认提供的自动装配类大部分都有@Condition条件，
+	 * 这里即使去除掉不满足相应的条件的配置类
+	 */
 	private List<String> filter(List<String> configurations, AutoConfigurationMetadata autoConfigurationMetadata) {
 		long startTime = System.nanoTime();
 		String[] candidates = StringUtils.toStringArray(configurations);
@@ -392,8 +409,11 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 					() -> String.format("Only %s implementations are supported, got %s",
 							AutoConfigurationImportSelector.class.getSimpleName(),
 							deferredImportSelector.getClass().getName()));
+
+			//获取自动装配列表
 			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
 					.getAutoConfigurationEntry(getAutoConfigurationMetadata(), annotationMetadata);
+
 			this.autoConfigurationEntries.add(autoConfigurationEntry);
 			for (String importClassName : autoConfigurationEntry.getConfigurations()) {
 				this.entries.putIfAbsent(importClassName, annotationMetadata);

@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * 注意这里可以直接测试controller
  */
 @SpringBootTest(classes = SpringbootDemoApplication.class)
-//测试环境使用，用来表示测试环境使用的ApplicationContext将是WebApplicationContext类型的
+// 测试环境使用，用来表示测试环境使用的ApplicationContext将是WebApplicationContext类型的
 @WebAppConfiguration
 @RunWith(SpringRunner.class)
 public class HelloControllerTest {
@@ -27,7 +27,7 @@ public class HelloControllerTest {
 	public void baseTest() {
 		TestCase.assertEquals("高书电，你好 !!!", controller.index());
 
-		TestCase.assertEquals("gsd",controller.getName());
+		TestCase.assertEquals("gsd", controller.getName());
 	}
 
 }

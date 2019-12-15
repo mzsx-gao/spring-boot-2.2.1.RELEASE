@@ -35,12 +35,11 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-		//注册几个基础的bean,重点是ConfigurationPropertiesBindingPostProcessor，它是处理属性值映射的核心类
+		// 注册几个基础的bean,重点是ConfigurationPropertiesBindingPostProcessor，它是处理属性值映射的核心类
 		registerInfrastructureBeans(registry);
 
 		/**
-		 * @EnableConfigurationProperties(Person.class)
-		 * 这里是将@EnableConfigurationProperties注解里的value值对应的类(如:Person)注册为spring的一个bean;最终让
+		 * @EnableConfigurationProperties(Person.class) 这里是将@EnableConfigurationProperties注解里的value值对应的类(如:Person)注册为spring的一个bean;最终让
 		 * ConfigurationPropertiesBindingPostProcessor这个后处理器在bean初始化之前拦截处理
 		 */
 		ConfigurationPropertiesBeanRegistrar beanRegistrar = new ConfigurationPropertiesBeanRegistrar(registry);

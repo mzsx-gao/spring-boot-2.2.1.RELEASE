@@ -41,7 +41,7 @@ class SpringApplicationRunListeners {
 		this.listeners = new ArrayList<>(listeners);
 	}
 
-	//首次启动run方法时立即调用
+	// 首次启动run方法时立即调用
 	void starting() {
 		for (SpringApplicationRunListener listener : this.listeners) {
 			listener.starting();

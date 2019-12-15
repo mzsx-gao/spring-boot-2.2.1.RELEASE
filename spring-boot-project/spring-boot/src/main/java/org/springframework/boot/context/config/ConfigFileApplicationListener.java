@@ -198,7 +198,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		addPropertySources(environment, application.getResourceLoader());
 	}
 
-	//最终添加了一个PropertySourceOrderingPostProcessor.
+	// 最终添加了一个PropertySourceOrderingPostProcessor.
 	private void onApplicationPreparedEvent(ApplicationEvent event) {
 		this.logger.switchTo(ConfigFileApplicationListener.class);
 		addPostProcessors(((ApplicationPreparedEvent) event).getApplicationContext());
@@ -297,7 +297,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private final ResourceLoader resourceLoader;
 
-		//配置文件加载器，包括PropertiesPropertySourceLoader和YamlPropertySourceLoader
+		// 配置文件加载器，包括PropertiesPropertySourceLoader和YamlPropertySourceLoader
 		private final List<PropertySourceLoader> propertySourceLoaders;
 
 		private Deque<Profile> profiles;
@@ -314,7 +314,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.environment = environment;
 			this.placeholdersResolver = new PropertySourcesPlaceholdersResolver(this.environment);
 			this.resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
-			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, getClass().getClassLoader());
+			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
+					getClass().getClassLoader());
 		}
 
 		void load() {
@@ -332,22 +333,21 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 							}
 							/**
 							 * 1.this::getPositiveProfileFilter
-							 *	如果需要引用的方法就是当前类中的成员方法，那么可以使用“this::成员方法”的格式来使用方法引用
-							 * 2.MutablePropertySources::addLast
-							 * 对象方法引用(引用特定类型的任意对象的实例方法)
-							 *  满足一下两个条件:
-							 *  1.抽象方法的第一个参数类型刚好是实例方法的类型
-							 *  2.抽象方法剩余的参数恰好可以当做实例方法的参数。
-							 *  如果函数式接口的实现能由上面说的实例方法调用来实现的话，那么就可以使用对象方法引用第一个参数类型 最好是自定义的类型
-							 *  语法:  类名::instMethod
+							 * 如果需要引用的方法就是当前类中的成员方法，那么可以使用“this::成员方法”的格式来使用方法引用
+							 * 2.MutablePropertySources::addLast 对象方法引用(引用特定类型的任意对象的实例方法)
+							 * 满足一下两个条件: 1.抽象方法的第一个参数类型刚好是实例方法的类型
+							 * 2.抽象方法剩余的参数恰好可以当做实例方法的参数。
+							 * 如果函数式接口的实现能由上面说的实例方法调用来实现的话，那么就可以使用对象方法引用第一个参数类型 最好是自定义的类型
+							 * 语法: 类名::instMethod
 							 *
-							 *  注意load()方法其实主要就是将解析出来的配置文件属性源存入到this.loaded中，供addLoadedPropertySources方法使用
+							 * 注意load()方法其实主要就是将解析出来的配置文件属性源存入到this.loaded中，供addLoadedPropertySources方法使用
 							 */
-							load(profile, this::getPositiveProfileFilter, addToLoaded(MutablePropertySources::addLast, false));
+							load(profile, this::getPositiveProfileFilter,
+									addToLoaded(MutablePropertySources::addLast, false));
 							this.processedProfiles.add(profile);
 						}
 						load(null, this::getNegativeProfileFilter, addToLoaded(MutablePropertySources::addFirst, true));
-						//向environment添加配置文件的propertySource
+						// 向environment添加配置文件的propertySource
 						addLoadedPropertySources();
 						applyActiveProfiles(defaultProperties);
 					});
@@ -431,8 +431,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					&& this.environment.acceptsProfiles(Profiles.of(document.getProfiles())));
 		}
 
-		//将解析出来的配置文件属性源添加到this.loaded中
-		private DocumentConsumer addToLoaded(BiConsumer<MutablePropertySources, PropertySource<?>> addMethod, boolean checkForExisting) {
+		// 将解析出来的配置文件属性源添加到this.loaded中
+		private DocumentConsumer addToLoaded(BiConsumer<MutablePropertySources, PropertySource<?>> addMethod,
+				boolean checkForExisting) {
 			return (profile, document) -> {
 				if (checkForExisting) {
 					for (MutablePropertySources merged : this.loaded.values()) {
@@ -441,7 +442,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						}
 					}
 				}
-				MutablePropertySources merged = this.loaded.computeIfAbsent(profile, (k) -> new MutablePropertySources());
+				MutablePropertySources merged = this.loaded.computeIfAbsent(profile,
+						(k) -> new MutablePropertySources());
 				addMethod.accept(merged, document.getPropertySource());
 			};
 		}
@@ -451,10 +453,10 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		 * 默认搜索文件名为application
 		 */
 		private void load(Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
-			//默认搜索以下路径:classpath:/,classpath:/config/,file:./,file:./config/
+			// 默认搜索以下路径:classpath:/,classpath:/config/,file:./,file:./config/
 			getSearchLocations().forEach((location) -> {
 				boolean isFolder = location.endsWith("/");
-				//getSearchNames默认返回application
+				// getSearchNames默认返回application
 				Set<String> names = isFolder ? getSearchNames() : NO_SEARCH_NAMES;
 				names.forEach((name) -> load(location, name, profile, filterFactory, consumer));
 			});
@@ -464,7 +466,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		 * 加载属性源，内部会拼接location(如:classpath:/)、name(如:application)、profile（如:test）为配置文件的名称，并且用
 		 * PropertiesPropertySourceLoader和YamlPropertySourceLoader来分别加载properties文件和yml文件
 		 */
-		private void load(String location, String name, Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
+		private void load(String location, String name, Profile profile, DocumentFilterFactory filterFactory,
+				DocumentConsumer consumer) {
 			if (!StringUtils.hasText(name)) {
 				for (PropertySourceLoader loader : this.propertySourceLoaders) {
 					if (canLoadFileExtension(loader, location)) {
@@ -477,7 +480,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						+ "a directory, it must end in '/'");
 			}
 			Set<String> processed = new HashSet<>();
-			//this.propertySourceLoaders包括PropertiesPropertySourceLoader和YamlPropertySourceLoader
+			// this.propertySourceLoaders包括PropertiesPropertySourceLoader和YamlPropertySourceLoader
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				/**
 				 * PropertiesPropertySourceLoader.getFileExtensions()返回"properties", "xml"
@@ -485,8 +488,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				 */
 				for (String fileExtension : loader.getFileExtensions()) {
 					if (processed.add(fileExtension)) {
-						//真正解析加载配置文件的地方就偷偷的隐藏在这里，哈哈！！
-						loadForFileExtension(loader, location + name, "." + fileExtension, profile, filterFactory, consumer);
+						// 真正解析加载配置文件的地方就偷偷的隐藏在这里，哈哈！！
+						loadForFileExtension(loader, location + name, "." + fileExtension, profile, filterFactory,
+								consumer);
 					}
 				}
 			}
@@ -497,7 +501,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name, fileExtension));
 		}
 
-		//加载配置文件，组装好propertySource，存入this.loaded
+		// 加载配置文件，组装好propertySource，存入this.loaded
 		private void loadForFileExtension(PropertySourceLoader loader, String prefix, String fileExtension,
 				Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			DocumentFilter defaultFilter = filterFactory.getDocumentFilter(null);
@@ -520,19 +524,21 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		}
 
 		private void load(PropertySourceLoader loader, String location, Profile profile, DocumentFilter filter,
-						  DocumentConsumer consumer) {
+				DocumentConsumer consumer) {
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
 				if (resource == null || !resource.exists()) {
 					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped missing config ", location, resource, profile);
+						StringBuilder description = getDescription("Skipped missing config ", location, resource,
+								profile);
 						this.logger.trace(description);
 					}
 					return;
 				}
 				if (!StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()))) {
 					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped empty config extension ", location, resource, profile);
+						StringBuilder description = getDescription("Skipped empty config extension ", location,
+								resource, profile);
 						this.logger.trace(description);
 					}
 					return;
@@ -541,7 +547,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				List<Document> documents = loadDocuments(loader, name, resource);
 				if (CollectionUtils.isEmpty(documents)) {
 					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped unloaded config ", location, resource, profile);
+						StringBuilder description = getDescription("Skipped unloaded config ", location, resource,
+								profile);
 						this.logger.trace(description);
 					}
 					return;
@@ -576,7 +583,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			this.profiles.addAll(existingProfiles);
 		}
 
-		private List<Document> loadDocuments(PropertySourceLoader loader, String name, Resource resource) throws IOException {
+		private List<Document> loadDocuments(PropertySourceLoader loader, String name, Resource resource)
+				throws IOException {
 			DocumentsCacheKey cacheKey = new DocumentsCacheKey(loader, resource);
 			List<Document> documents = this.loadDocumentsCache.get(cacheKey);
 			if (documents == null) {
@@ -647,7 +655,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				return getSearchLocations(CONFIG_LOCATION_PROPERTY);
 			}
 			Set<String> locations = getSearchLocations(CONFIG_ADDITIONAL_LOCATION_PROPERTY);
-			locations.addAll(asResolvedSet(ConfigFileApplicationListener.this.searchLocations, DEFAULT_SEARCH_LOCATIONS));
+			locations.addAll(
+					asResolvedSet(ConfigFileApplicationListener.this.searchLocations, DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
 
@@ -682,12 +691,14 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			return new LinkedHashSet<>(list);
 		}
 
-		//向environment添加配置文件的propertySource,source的名字如:applicationConfig: [classpath:/application-test.properties]
+		// 向environment添加配置文件的propertySource,source的名字如:applicationConfig:
+		// [classpath:/application-test.properties]
 		private void addLoadedPropertySources() {
 			MutablePropertySources destination = this.environment.getPropertySources();
 			List<MutablePropertySources> loaded = new ArrayList<>(this.loaded.values());
-			//倒序后 loaded: application-test.properties, application-test.yml,application.properties;即将不带profile的
-			//放到后面
+			// 倒序后 loaded: application-test.properties,
+			// application-test.yml,application.properties;即将不带profile的
+			// 放到后面
 			Collections.reverse(loaded);
 			String lastAdded = null;
 			Set<String> added = new HashSet<>();

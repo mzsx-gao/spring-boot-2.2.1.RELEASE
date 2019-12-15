@@ -11,12 +11,10 @@ public class HelloController {
 	@Autowired
 	private Person people;
 
-
 	@RequestMapping("/")
 	public String index() {
 		return "高书电，你好 !!!";
 	}
-
 
 	@RequestMapping("/getName")
 	public String getName() {

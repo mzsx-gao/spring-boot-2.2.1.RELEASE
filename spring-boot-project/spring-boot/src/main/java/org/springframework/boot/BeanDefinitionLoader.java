@@ -130,7 +130,7 @@ class BeanDefinitionLoader {
 		return count;
 	}
 
-	//加载source的beanDefinition并注册到容器中
+	// 加载source的beanDefinition并注册到容器中
 	private int load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?>) {
@@ -275,9 +275,8 @@ class BeanDefinitionLoader {
 	}
 
 	/**
-	 * 如果当前类上有@Component 注解的话,则返回true.
-	 * 如果当前类的类名匹配.*$_.*closure.* ,或者是一个匿名类,或者构造器不存在的话,返回false.
-	 * 如果以上都不匹配的话,返回true.
+	 * 如果当前类上有@Component 注解的话,则返回true. 如果当前类的类名匹配.*$_.*closure.*
+	 * ,或者是一个匿名类,或者构造器不存在的话,返回false. 如果以上都不匹配的话,返回true.
 	 */
 	private boolean isComponent(Class<?> type) {
 		// This has to be a bit of a guess. The only way to be sure that this type is

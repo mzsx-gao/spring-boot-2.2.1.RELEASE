@@ -70,9 +70,9 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 	 * {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigServletWebServerApplicationContext() {
-		//注解bean读取类，内部会注册所有相关的注解后处理器到beanFactory中，供后续spring调用统一接口进行解析
+		// 注解bean读取类，内部会注册所有相关的注解后处理器到beanFactory中，供后续spring调用统一接口进行解析
 		this.reader = new AnnotatedBeanDefinitionReader(this);
-		//bean扫描器
+		// bean扫描器
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -198,9 +198,9 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 		super.prepareRefresh();
 	}
 
-    /**
-     * 子类覆盖了父类AbstractApplication的postProcessBeanFactory方法做额外的处理，这里就是一个扩展点
-     */
+	/**
+	 * 子类覆盖了父类AbstractApplication的postProcessBeanFactory方法做额外的处理，这里就是一个扩展点
+	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);

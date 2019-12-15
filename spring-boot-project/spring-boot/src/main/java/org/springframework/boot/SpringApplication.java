@@ -268,17 +268,17 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		//推断当前应用类型，看classpath下是否存在这两个类javax.servlet.Servlet、
+		// 推断当前应用类型，看classpath下是否存在这两个类javax.servlet.Servlet、
 		// org.springframework.web.context.ConfigurableWebApplicationContext
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		//实例化spring.factories文件里定义的ApplicationContextInitializer
+		// 实例化spring.factories文件里定义的ApplicationContextInitializer
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
-		//实例化spring.factories文件里定义的ApplicationListener
+		// 实例化spring.factories文件里定义的ApplicationListener
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
-	//获得当前应用的启动类
+	// 获得当前应用的启动类
 	private Class<?> deduceMainApplicationClass() {
 		try {
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
@@ -298,45 +298,46 @@ public class SpringApplication {
 	 * 启动springboot应用, 创建并刷新一个{@link ApplicationContext}.
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		//计时工具
+		// 计时工具
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
-		//设置系统属性java.awt.headless，这⾥里里设置为true，表示运⾏行行在服务器器端，在没有显示器器和⿏鼠标键盘的模式下⼯工作，模拟
-		//输⼊入输出设备功能
+		// 设置系统属性java.awt.headless，这⾥里里设置为true，表示运⾏行行在服务器器端，在没有显示器器和⿏鼠标键盘的模式下⼯工作，模拟
+		// 输⼊入输出设备功能
 		configureHeadlessProperty();
-		//通过调用getSpringFactoriesInstances加载SpringApplicationRunListener.然后初始化SpringApplicationRunListeners
+		// 通过调用getSpringFactoriesInstances加载SpringApplicationRunListener.然后初始化SpringApplicationRunListeners
 		SpringApplicationRunListeners listeners = getRunListeners(args);
-		//最终调用监听器的onApplicationEvent(ApplicationEvent event)方法,监听的事件为ApplicationStartingEvent
+		// 最终调用监听器的onApplicationEvent(ApplicationEvent
+		// event)方法,监听的事件为ApplicationStartingEvent
 		listeners.starting();
 		try {
-			//创建一个DefaultApplicationArguments对象，它持有着args参数，就是main函数传进来的参数
+			// 创建一个DefaultApplicationArguments对象，它持有着args参数，就是main函数传进来的参数
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			//准备环境
+			// 准备环境
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
-			//配置需要忽略的bean
+			// 配置需要忽略的bean
 			configureIgnoreBeanInfo(environment);
-			//打印banner
+			// 打印banner
 			Banner printedBanner = printBanner(environment);
-			//创建springboot上下文，通常web环境为AnnotationConfigServletWebServerApplicationContext
+			// 创建springboot上下文，通常web环境为AnnotationConfigServletWebServerApplicationContext
 			context = createApplicationContext();
-			//获取异常报告对象
+			// 获取异常报告对象
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
-			//准备上下文环境
+			// 准备上下文环境
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-			//刷新上下文,该执行调用spring IOC刷新上下文过程，注意springboot创建内置的servlet容器就是在这里创建的
+			// 刷新上下文,该执行调用spring IOC刷新上下文过程，注意springboot创建内置的servlet容器就是在这里创建的
 			refreshContext(context);
-			//刷新上下文后续处理
+			// 刷新上下文后续处理
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
-			//执行监听器started方法
+			// 执行监听器started方法
 			listeners.started(context);
-			//对容器中实现CommandLineRunner、ApplicationRunner接口的bean进行其run方法的回调
+			// 对容器中实现CommandLineRunner、ApplicationRunner接口的bean进行其run方法的回调
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -345,7 +346,7 @@ public class SpringApplication {
 		}
 
 		try {
-			//在run方法完成之前立即调用，刷新应用程序上下文并且所有的CommandLineRunners和ApplicationRunners已经被调用
+			// 在run方法完成之前立即调用，刷新应用程序上下文并且所有的CommandLineRunners和ApplicationRunners已经被调用
 			listeners.running(context);
 		}
 		catch (Throwable ex) {
@@ -355,7 +356,7 @@ public class SpringApplication {
 		return context;
 	}
 
-	//创建并配置环境
+	// 创建并配置环境
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
 		// 获取或创建环境
@@ -387,32 +388,33 @@ public class SpringApplication {
 		}
 	}
 
-	//准备上下文环境
+	// 准备上下文环境
 	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
-	    //上下文设置环境
+		// 上下文设置环境
 		context.setEnvironment(environment);
-		//设置上下文的beanNameGenerator和resourceLoader(如果SpringApplication有的话)
+		// 设置上下文的beanNameGenerator和resourceLoader(如果SpringApplication有的话)
 		postProcessApplicationContext(context);
-		//在上下文context刷新之前调用所有的ApplicationContextInitializer的initialize方法，对上下文做初始化，
-        //比如这里的初始化过程中可以给context上下文添加一些BeanFactoryPostProcessor
+		// 在上下文context刷新之前调用所有的ApplicationContextInitializer的initialize方法，对上下文做初始化，
+		// 比如这里的初始化过程中可以给context上下文添加一些BeanFactoryPostProcessor
 		applyInitializers(context);
-		//contextPrepareds 是一个空实现
+		// contextPrepareds 是一个空实现
 		listeners.contextPrepared(context);
-		//打印启动日志
+		// 打印启动日志
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
 		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		//往上下文的beanFactory中注册一个singleton的bean，bean的名字是springApplicationArguments，bean的实例是之前实例化的ApplicationArguments对象
+		// 往上下文的beanFactory中注册一个singleton的bean，bean的名字是springApplicationArguments，bean的实例是之前实例化的ApplicationArguments对象
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
 		if (printedBanner != null) {
-            //注册一个singleton的bean，bean的名字是springBootBanner，bean的实例就是这个printedBanner
+			// 注册一个singleton的bean，bean的名字是springBootBanner，bean的实例就是这个printedBanner
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
 		if (beanFactory instanceof DefaultListableBeanFactory) {
-			((DefaultListableBeanFactory) beanFactory).setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+			((DefaultListableBeanFactory) beanFactory)
+					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
@@ -423,11 +425,11 @@ public class SpringApplication {
 		// 注册启动类的bean定义，SpringApplication的load方法内会创建BeanDefinitionLoader的对象，并调用它的load()方法
 		load(context, sources.toArray(new Object[0]));
 		// 1.上下文已经加载，该方法先找到所有的ApplicationListener，遍历这些listener，广播ApplicationPreparedEvent事件
-        // 2.如果该listener继承了ApplicationContextAware类，那么在这一步会调用它的setApplicationContext方法，设置context
+		// 2.如果该listener继承了ApplicationContextAware类，那么在这一步会调用它的setApplicationContext方法，设置context
 		listeners.contextLoaded(context);
 	}
 
-	//刷新上下文
+	// 刷新上下文
 	private void refreshContext(ConfigurableApplicationContext context) {
 		refresh(context);
 		if (this.registerShutdownHook) {
@@ -465,7 +467,7 @@ public class SpringApplication {
 		return instances;
 	}
 
-	//创建spring.factories中定义的类的实例
+	// 创建spring.factories中定义的类的实例
 	@SuppressWarnings("unchecked")
 	private <T> List<T> createSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes,
 			ClassLoader classLoader, Object[] args, Set<String> names) {
@@ -485,7 +487,7 @@ public class SpringApplication {
 		return instances;
 	}
 
-	//获取或创建环境
+	// 获取或创建环境
 	private ConfigurableEnvironment getOrCreateEnvironment() {
 		if (this.environment != null) {
 			return this.environment;
@@ -583,16 +585,17 @@ public class SpringApplication {
 		}
 	}
 
-	//打印banner
+	// 打印banner
 	private Banner printBanner(ConfigurableEnvironment environment) {
-        // 1. 首先判断banner的输出级别。如果禁用了，则直接返回空
+		// 1. 首先判断banner的输出级别。如果禁用了，则直接返回空
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader : new DefaultResourceLoader(getClassLoader());
-        //实例化SpringApplicationBannerPrinter类
+		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
+				: new DefaultResourceLoader(getClassLoader());
+		// 实例化SpringApplicationBannerPrinter类
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
-        //如果banner的输出模式是Mode.LOG，则直接将其信息输出到logger日志中，否则将其输出到控制台，也就是System.out
+		// 如果banner的输出模式是Mode.LOG，则直接将其信息输出到logger日志中，否则将其输出到控制台，也就是System.out
 		if (this.bannerMode == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
@@ -636,7 +639,8 @@ public class SpringApplication {
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
 		if (this.beanNameGenerator != null) {
-			context.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
+			context.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+					this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {
@@ -659,11 +663,12 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void applyInitializers(ConfigurableApplicationContext context) {
-        //从SpringApplication类中的initializers集合获取所有的ApplicationContextInitializer
+		// 从SpringApplication类中的initializers集合获取所有的ApplicationContextInitializer
 		for (ApplicationContextInitializer initializer : getInitializers()) {
-			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(), ApplicationContextInitializer.class);
+			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
+					ApplicationContextInitializer.class);
 			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
-			//循环调用ApplicationContextInitializer中的initialize方法
+			// 循环调用ApplicationContextInitializer中的initialize方法
 			initializer.initialize(context);
 		}
 	}
@@ -796,7 +801,7 @@ public class SpringApplication {
 	protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
 	}
 
-    //对容器中实现CommandLineRunner、ApplicationRunner接口的bean进行其run方法的回调
+	// 对容器中实现CommandLineRunner、ApplicationRunner接口的bean进行其run方法的回调
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
 		List<Object> runners = new ArrayList<>();
 		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
@@ -830,9 +835,10 @@ public class SpringApplication {
 		}
 	}
 
-    /**
-     * 当SpringApplication#run 运行过程中,发生异常时,会调用handleRunFailure,进行处理,最后抛出IllegalStateException
-     */
+	/**
+	 * 当SpringApplication#run
+	 * 运行过程中,发生异常时,会调用handleRunFailure,进行处理,最后抛出IllegalStateException
+	 */
 	private void handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
 			Collection<SpringBootExceptionReporter> exceptionReporters, SpringApplicationRunListeners listeners) {
 		try {
