@@ -298,38 +298,37 @@ public class SpringApplication {
 	 * 启动springboot应用, 创建并刷新一个{@link ApplicationContext}.
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		// 计时工具
+		//计时工具
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
-		// 设置系统属性java.awt.headless，这⾥里里设置为true，表示运⾏行行在服务器器端，在没有显示器器和⿏鼠标键盘的模式下⼯工作，模拟
-		// 输⼊入输出设备功能
+		//设置系统属性java.awt.headless，这⾥设置为true，表示运⾏在服务器端，在没有显示器和⿏标键盘的模式下工作，模拟
+		//输⼊入输出设备功能
 		configureHeadlessProperty();
-		// 通过调用getSpringFactoriesInstances加载SpringApplicationRunListener.然后初始化SpringApplicationRunListeners
+		//通过调用getSpringFactoriesInstances加载SpringApplicationRunListener.然后初始化SpringApplicationRunListeners
 		SpringApplicationRunListeners listeners = getRunListeners(args);
-		// 最终调用监听器的onApplicationEvent(ApplicationEvent
-		// event)方法,监听的事件为ApplicationStartingEvent
+		//最终调用监听器的onApplicationEvent(ApplicationEvent event)方法,监听的事件为ApplicationStartingEvent
 		listeners.starting();
 		try {
-			// 创建一个DefaultApplicationArguments对象，它持有着args参数，就是main函数传进来的参数
+			//创建一个DefaultApplicationArguments对象，它持有着args参数，就是main函数传进来的参数
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			// 准备环境
+			//准备环境
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
-			// 配置需要忽略的bean
+			//配置需要忽略的bean
 			configureIgnoreBeanInfo(environment);
-			// 打印banner
+			//打印banner
 			Banner printedBanner = printBanner(environment);
-			// 创建springboot上下文，通常web环境为AnnotationConfigServletWebServerApplicationContext
+			//创建springboot上下文，通常web环境为AnnotationConfigServletWebServerApplicationContext
 			context = createApplicationContext();
-			// 获取异常报告对象
+			//获取异常报告对象
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
-			// 准备上下文环境
+			//准备上下文环境
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-			// 刷新上下文,该执行调用spring IOC刷新上下文过程，注意springboot创建内置的servlet容器就是在这里创建的
+			//刷新上下文,该执行调用spring IOC刷新上下文过程，注意springboot创建内置的servlet容器就是在这里创建的
 			refreshContext(context);
-			// 刷新上下文后续处理
+			//刷新上下文后续处理
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
@@ -665,8 +664,7 @@ public class SpringApplication {
 	protected void applyInitializers(ConfigurableApplicationContext context) {
 		// 从SpringApplication类中的initializers集合获取所有的ApplicationContextInitializer
 		for (ApplicationContextInitializer initializer : getInitializers()) {
-			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
-					ApplicationContextInitializer.class);
+			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(), ApplicationContextInitializer.class);
 			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
 			// 循环调用ApplicationContextInitializer中的initialize方法
 			initializer.initialize(context);

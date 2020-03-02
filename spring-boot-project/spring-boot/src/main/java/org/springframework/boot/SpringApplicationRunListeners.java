@@ -27,8 +27,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * SpringApplicationRunListeners类的主要作用就是存储监听器对象集合并发布各种监听事件,SpringApplicationRunListeners其本质上
- * 就是一个事件对象存储和发布者,它在SpringBoot应用启动的不同时间点委托给ApplicationEventMulticaster发布不同应用事件类型(ApplicationEvent)
+ * SpringApplicationRunListeners类的主要作用就是存储监听器对象集合并发布各种监听事件,SpringApplicationRunListeners其本质上就是一个
+ * 事件对象存储和发布者,它在SpringBoot应用启动的不同时间点委托给ApplicationEventMulticaster发布不同应用事件类型(ApplicationEvent)
  */
 class SpringApplicationRunListeners {
 
