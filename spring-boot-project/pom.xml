@@ -16,7 +16,7 @@
 	</properties>
 	<modules>
 		<module>spring-boot-dependencies</module>
-		<!--<module>spring-boot-parent</module>-->
+		<module>spring-boot-parent</module>
 		<module>spring-boot</module>
 		<module>spring-boot-actuator</module>
 		<module>spring-boot-actuator-autoconfigure</module>
