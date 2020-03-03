@@ -108,6 +108,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return null;
 	}
 
+	/**
+	 * 核心原理就是通过beanFactory.getBeanNamesForType()来判断spring容器中是否存在ConditionalOnBean注解中的bean
+	 */
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage matchMessage = ConditionMessage.empty();

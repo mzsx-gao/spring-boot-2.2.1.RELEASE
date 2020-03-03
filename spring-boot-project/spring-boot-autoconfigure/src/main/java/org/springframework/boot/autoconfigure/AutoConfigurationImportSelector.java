@@ -93,10 +93,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		if (!isEnabled(annotationMetadata)) {
 			return NO_IMPORTS;
 		}
-		AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader
-				.loadMetadata(this.beanClassLoader);
-		AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(autoConfigurationMetadata,
-				annotationMetadata);
+		AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader.loadMetadata(this.beanClassLoader);
+		AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(autoConfigurationMetadata, annotationMetadata);
 		return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
 	}
 
@@ -251,7 +249,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * org.springframework.boot.autoconfigure.condition.OnClassCondition,\
 	 * org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
 	 * 2.循环调用match()方法进行过滤,将符合要求的加入到result中进行返回,说白了就是springboot默认提供的自动装配类大部分都有@Condition条件，
-	 * 这里即使去除掉不满足相应的条件的配置类
+	 * 这里即是去除掉不满足相应的条件的配置类
 	 */
 	private List<String> filter(List<String> configurations, AutoConfigurationMetadata autoConfigurationMetadata) {
 		long startTime = System.nanoTime();
@@ -420,6 +418,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			}
 		}
 
+		//找出所有需要注册到spring容器中的自动装配类
 		@Override
 		public Iterable<Entry> selectImports() {
 			if (this.autoConfigurationEntries.isEmpty()) {
@@ -446,14 +445,12 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private List<String> sortAutoConfigurations(Set<String> configurations,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
-			return new AutoConfigurationSorter(getMetadataReaderFactory(), autoConfigurationMetadata)
-					.getInPriorityOrder(configurations);
+			return new AutoConfigurationSorter(getMetadataReaderFactory(), autoConfigurationMetadata).getInPriorityOrder(configurations);
 		}
 
 		private MetadataReaderFactory getMetadataReaderFactory() {
 			try {
-				return this.beanFactory.getBean(SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
-						MetadataReaderFactory.class);
+				return this.beanFactory.getBean(SharedMetadataReaderFactoryContextInitializer.BEAN_NAME, MetadataReaderFactory.class);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return new CachingMetadataReaderFactory(this.resourceLoader);

@@ -28,9 +28,9 @@ import org.springframework.util.ObjectUtils;
  */
 public class ConditionOutcome {
 
-	private final boolean match;
+	private final boolean match;//是否匹配
 
-	private final ConditionMessage message;
+	private final ConditionMessage message;//匹配以后打印的消息
 
 	/**
 	 * Create a new {@link ConditionOutcome} instance. For more consistent messages

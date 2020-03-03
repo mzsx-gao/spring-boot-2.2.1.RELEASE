@@ -86,7 +86,7 @@
 							<!--</execution>-->
 						<!--</executions>-->
 					<!--</plugin>-->
-					<plugin>
+					<!-- <plugin>
 						<groupId>io.spring.javaformat</groupId>
 						<artifactId>spring-javaformat-maven-plugin</artifactId>
 						<version>${spring-javaformat.version}</version>
@@ -101,7 +101,7 @@
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
+					</plugin> -->
 				</plugins>
 			</build>
 			<modules>
@@ -378,6 +378,7 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				<!-- 添加maven编译插件 -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>

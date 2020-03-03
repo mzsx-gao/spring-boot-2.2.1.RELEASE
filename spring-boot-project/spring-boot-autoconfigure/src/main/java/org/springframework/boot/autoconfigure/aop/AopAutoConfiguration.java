@@ -49,6 +49,9 @@ public class AopAutoConfiguration {
 	@ConditionalOnClass(Advice.class)
 	static class AspectJAutoProxyingConfiguration {
 
+		/**
+		 * aop自动配置就是通过@EnableAspectJAutoProxy来实现的，相当于<aop:aspectj-autoproxy />
+		 */
 		@Configuration(proxyBeanMethods = false)
 		@EnableAspectJAutoProxy(proxyTargetClass = false)
 		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false",

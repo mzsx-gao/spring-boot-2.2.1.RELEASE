@@ -86,6 +86,9 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		}
 	}
 
+	/**
+	 * 核心原理就是通过Class.forName()来判断是否存在ConditionalOnClass注解中的class
+	 */
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ClassLoader classLoader = context.getClassLoader();
